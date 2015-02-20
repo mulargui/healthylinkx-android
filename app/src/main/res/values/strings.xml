@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">healthylinkx-android</string>
+    <string name="action_settings">Settings</string>
+    <string name="SearchTitle">Providers Search</string>
+    <string name="Specialty">Select a Specialty</string>
+    <string name="LastName">Last Name</string>
+    <string name="Zipcode">Zip Code</string>
+    <string name="SearchAction">Search</string>
+    <string name="ShortlistAction">Select Providers</string>
+    <string name="ProvidersListTitle">Matching Providers</string>
+    <string name="ShortListTitle">ShortList</string>
+    <string name="hello_world">Hello world!</string>
+</resources>
