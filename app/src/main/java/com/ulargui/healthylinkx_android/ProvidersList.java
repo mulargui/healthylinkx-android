@@ -11,6 +11,7 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -19,6 +20,7 @@ public class ProvidersList extends ActionBarActivity
     implements AsyncResponse{
 
     private Providers conn = null;
+    String[] npi = new String[3];
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -45,6 +47,7 @@ public class ProvidersList extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_providers_list);
 
         Intent intent = getIntent();
         Bundle b = getIntent().getExtras();
@@ -66,35 +69,74 @@ public class ProvidersList extends ActionBarActivity
         LinearLayout linearLayout =  (LinearLayout)findViewById(R.id.ProviderList);
         RelativeLayout inflatedView;
 
-        String tmp, npi;
+        String tmp, tmpnpi;
         int i;
         for (String[] s: output) {
-            tmp="";npi="";
+            tmp="";tmpnpi="";
             i=0;
             for (String t : s) {
-                if (i==0) npi=t;
+                if (i==0) tmpnpi=t;
                 else tmp += t + "\n";
                 i++;
             }
-            inflatedView = (RelativeLayout) View.inflate(this, R.layout.provider_layout, null);
+            inflatedView = (RelativeLayout) getLayoutInflater().inflate(R.layout.provider_layout, null);
             ((TextView) inflatedView.findViewById(R.id.provider_details)).setText(tmp);
-            ((CheckBox) inflatedView.findViewById(R.id.checkBox)).setTag(npi);
-            linearLayout.addView(inflatedView);
-        }
-    }
-	
-	public void ShortListProviders(View view) {
-        //LinearLayout l = (LinearLayout) getLayoutInflater().inflate(R.layout.Main, null);
-        LinearLayout l = (LinearLayout) findViewById(R.id.ProviderList);
-        ViewGroup vg = (ViewGroup)l.getRootView();
-        String tag="";
-        for (int i = 0; i < vg.getChildCount(); i++){
-            View v = (View) vg.getChildAt(i);
-            if ((v instanceof CheckBox) && ((CheckBox) v).isChecked())
-                tag += (String) v.getTag() + "#";
+            ((CheckBox) inflatedView.findViewById(R.id.checkBox)).setTag(tmpnpi);
+            linearLayout.addView(inflatedView,0);
         }
 
-        TextView answer =  (TextView)findViewById(R.id.Answer);
-        answer.setText(tag);
+        //show the buttons
+        findViewById(R.id.ShortList).setVisibility(View.VISIBLE);
+        findViewById(R.id.NewSearch).setVisibility(View.VISIBLE);
+    }
+
+    public void onCheckboxClicked(View view) {
+        // Is the view now checked?
+        if(((CheckBox) view).isChecked()){
+            for (int i=0; i< npi.length;i++){
+                if((npi[i]==null) || npi[i].isEmpty()){
+                    npi[i]=(String) view.getTag();
+                    return;
+                }
+            }
+            // too many selected
+            ((CheckBox) view).setChecked(false);
+            Toast.makeText(getApplicationContext(), "You can only select three providers", Toast.LENGTH_SHORT).show();
+            return;
+        }else{
+            for (int i=0; i< npi.length;i++){
+                if ((npi[i]!= null) && (npi[i] == (String) view.getTag())) {
+                    npi[i]="";
+                    return;
+                }
+            }
+            //not found?
+        }
+    }
+
+    public void SearchAgain(View view) {
+        Intent intent = new Intent(this, Search.class);
+        startActivity(intent);
+    }
+
+	public void ShortListProviders(View view) {
+        // Creating Bundle object
+        Bundle b = new Bundle();
+
+        int found=0;
+        for (int i=0; i< npi.length;i++)
+            if ((npi[i]!= null) && (!npi[i].isEmpty())){
+                b.putString("NPI"+i, npi[i]);
+                found ++;
+            }
+
+        if (found==0){
+            Toast.makeText(getApplicationContext(), "You need to select at least one provider", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Intent intent = new Intent(this, ShortList.class);
+        intent.putExtras(b);
+        startActivity(intent);
     }
 }

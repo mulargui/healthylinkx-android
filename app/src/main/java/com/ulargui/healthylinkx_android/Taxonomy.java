@@ -12,7 +12,7 @@ public class Taxonomy extends CallService{
 
     Taxonomy(AsyncResponse a){
         super(a);
-        call("http://10.0.2.2:8081" + "/taxonomy");
+        call(MyAppConstants.BASE_URL + "/taxonomy");
     }
 
     protected void onPostExecute(String result){
